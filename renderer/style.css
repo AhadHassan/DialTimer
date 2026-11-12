@@ -1,0 +1,96 @@
+@font-face {
+  font-family: 'Outfit';
+  font-weight: 300;
+  src: url('fonts/outfit-latin-300-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Outfit';
+  font-weight: 400;
+  src: url('fonts/outfit-latin-400-normal.woff2') format('woff2');
+}
+
+:root {
+  --bg-alpha: 0.45;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  cursor: default;
+  user-select: none;
+}
+
+/* Only the background is translucent; the digits stay pure white at full opacity. */
+#bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--bg-alpha));
+}
+
+#time {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  font-size: min(25vw, 58vh);
+  line-height: 1;
+  color: #fff;
+  white-space: nowrap;
+}
+#time.hours {
+  font-size: min(19vw, 58vh);
+}
+
+/* Fixed-width cells so digits never shift as the time changes. */
+#time .d {
+  display: inline-block;
+  width: 0.62em;
+  text-align: center;
+}
+#time .c {
+  display: inline-block;
+  width: 0.3em;
+  text-align: center;
+  transform: translateY(-0.04em);
+}
+
+/* Paused: the colons blink (still pure white when visible). */
+#time.paused .c {
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink {
+  50% { visibility: hidden; }
+}
+
+/* Finished: the digits pulse until the knob is clicked. */
+#time.alarm {
+  animation: pulse 0.9s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+
+#hint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 2.2vh;
+  text-align: center;
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+  transition: opacity 1.5s ease;
+}
+#hint.hidden {
+  opacity: 0;
+}
