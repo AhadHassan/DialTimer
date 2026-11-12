@@ -11,6 +11,7 @@
 
 :root {
   --bg-alpha: 0.45;
+  --digit-alpha: 1;
 }
 
 html, body {
@@ -40,7 +41,7 @@ html, body {
   font-variant-numeric: tabular-nums;
   font-size: min(25vw, 58vh);
   line-height: 1;
-  color: #fff;
+  color: rgb(255 255 255 / var(--digit-alpha));
   white-space: nowrap;
 }
 #time.hours {

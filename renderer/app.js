@@ -7,7 +7,8 @@ const FAST_WINDOW_MS = 300; // ...within this window switches to the fast step
 const MAX_MS = 9 * 3600 * 1000;
 const OPACITY_STEP = 0.05;
 const OPACITY_MIN = 0.05;
-const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll opacity · esc quit';
+const DIGIT_OPACITY_MIN = 0.2;
+const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll background · ctrl+scroll digits · esc quit';
 
 const timeEl = document.getElementById('time');
 const hintEl = document.getElementById('hint');
@@ -18,6 +19,7 @@ let remainingMs = 300000;
 let lastDurationMs = 300000;
 let endAt = 0;
 let opacity = 0.45;
+let digitOpacity = 1;
 let detents = [];
 
 /* ---------- hint line ---------- */
@@ -158,10 +160,26 @@ function setOpacity(value) {
   saveOpacityTimer = setTimeout(() => window.dial.setSettings({ opacity }), 300);
 }
 
+let saveDigitOpacityTimer = null;
+function setDigitOpacity(value) {
+  digitOpacity = Math.min(1, Math.max(DIGIT_OPACITY_MIN, Math.round(value * 100) / 100));
+  document.documentElement.style.setProperty('--digit-alpha', digitOpacity);
+  clearTimeout(saveDigitOpacityTimer);
+  saveDigitOpacityTimer = setTimeout(() => window.dial.setSettings({ digitOpacity }), 300);
+}
+
+// Scroll adjusts the background; Ctrl+scroll adjusts the digits.
 window.addEventListener('wheel', (e) => {
-  setOpacity(opacity + (e.deltaY < 0 ? OPACITY_STEP : -OPACITY_STEP));
-  showHint(`background ${Math.round(opacity * 100)}%`, 1500);
-}, { passive: true });
+  const step = e.deltaY < 0 ? OPACITY_STEP : -OPACITY_STEP;
+  if (e.ctrlKey) {
+    e.preventDefault(); // Ctrl+wheel would otherwise zoom the page
+    setDigitOpacity(digitOpacity + step);
+    showHint(`digits ${Math.round(digitOpacity * 100)}%`, 1500);
+  } else {
+    setOpacity(opacity + step);
+    showHint(`background ${Math.round(opacity * 100)}%`, 1500);
+  }
+}, { passive: false });
 
 /* ---------- input ---------- */
 
@@ -187,6 +205,7 @@ window.addEventListener('keydown', (e) => {
 (async function init() {
   const s = await window.dial.getSettings();
   setOpacity(s.opacity);
+  setDigitOpacity(s.digitOpacity);
   lastDurationMs = Math.min(MAX_MS, Math.max(0, s.lastDuration * 1000)) || 300000;
   remainingMs = lastDurationMs;
   render();
