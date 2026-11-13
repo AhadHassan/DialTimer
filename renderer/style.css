@@ -1,5 +1,10 @@
 :root {
-  --font: 'Segoe UI', sans-serif; /* weight 300 = Segoe UI Light */
+  --font: 'Outfit', 'Segoe UI', sans-serif;
+  --weight: 200; /* Outfit ExtraLight; 300 = Light */
+  /* Fixed cells keep the digits from shifting. The widest Outfit digit (0) is 0.5625em of ink, so a
+     0.60em cell leaves about 0.04em between two zeros; the colon cell is sized the same way. */
+  --digit-w: 0.6em;
+  --colon-w: 0.2em;
   --bg-alpha: 0.45;
   --digit-alpha: 1;
 }
@@ -21,7 +26,7 @@ html, body {
 }
 
 /* Digits and quote form one block, centred on the screen. Each text box is trimmed to its visible
-   glyph edges (offsets measured for Segoe UI Light) so the spacing between them is exactly --gap. */
+   glyph edges (offsets measured for Outfit) so the spacing between them is exactly --gap. */
 #stage {
   --gap: min(2.5vw, 4.4vh); /* digit baseline to the top of the quote's capitals */
   position: fixed;
@@ -36,10 +41,10 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -0.1958em;    /* line box top to digit top */
-  margin-bottom: -0.0854em; /* digit baseline to line box bottom */
+  margin-top: -0.1656em;    /* line box top to digit top */
+  margin-bottom: -0.1313em; /* digit baseline to line box bottom */
   font-family: var(--font);
-  font-weight: 300;
+  font-weight: var(--weight);
   font-variant-numeric: tabular-nums;
   font-size: min(25vw, 58vh);
   line-height: 1;
@@ -53,12 +58,12 @@ html, body {
 /* Fixed-width cells so digits never shift as the time changes. */
 #time .d {
   display: inline-block;
-  width: 0.62em;
+  width: var(--digit-w);
   text-align: center;
 }
 #time .c {
   display: inline-block;
-  width: 0.3em;
+  width: var(--colon-w);
   text-align: center;
   transform: translateY(-0.04em);
 }
@@ -82,11 +87,11 @@ html, body {
 
 /* Quote under the timer: same font and opacity as the digits. */
 #quote {
-  margin-top: calc(var(--gap) - 0.391em);  /* gap, minus line box top to cap height */
-  margin-bottom: -0.115em;                 /* last baseline + descender to line box bottom */
+  margin-top: calc(var(--gap) - 0.358em);  /* gap, minus line box top to cap height */
+  margin-bottom: -0.147em;                 /* last baseline + descender to line box bottom */
   max-width: 62vw;
   font-family: var(--font);
-  font-weight: 300;
+  font-weight: var(--weight);
   font-size: min(1.6vw, 3.2vh);
   line-height: 1.45;
   letter-spacing: 0.01em;

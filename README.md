@@ -58,7 +58,7 @@ npm run build
 dist\DialTimer-win32-x64\DialTimer.exe
 ```
 
-The text is set in Segoe UI Light, which ships with Windows, so there is no font to install. For development you can use `npm start`, but the knob only works with the built `DialTimer.exe`, because the AutoHotkey script matches that executable name.
+`npm install` also embeds the Outfit font from `@fontsource/outfit` into `renderer/fonts.css` as data URLs, so the font works wherever the app is installed, even in folders with very long paths. The text uses Outfit ExtraLight; for the slightly heavier Light weight, change `--weight` from `200` to `300` in `renderer/style.css`. For development you can use `npm start`, but the knob only works with the built `DialTimer.exe`, because the AutoHotkey script matches that executable name.
 
 If `npm install` skips Electron's download step on your machine, run `node node_modules/electron/install.js` once, then `npm run build`.
 
@@ -86,11 +86,12 @@ Saved to `%APPDATA%\DialTimer\settings.json`: background opacity (default 0.45),
 ```
 main.js            Electron main process: window, settings, launches AutoHotkey
 preload.js         Safe bridge between window and main process
-renderer/          UI: index.html, style.css, app.js, quotes.js
+renderer/          UI: index.html, style.css, app.js, quotes.js, fonts.css (embedded font)
 ahk/dialtimer.ahk  Knob input bridge
-scripts/           build.js (assembles dist/DialTimer-win32-x64/DialTimer.exe)
+scripts/           copy-font.js (embeds the font) and build.js (assembles dist/DialTimer-win32-x64/DialTimer.exe)
 ```
 
 ## Credits
 
+- Digits and quotes use [Outfit](https://github.com/Outfitio/Outfit-Fonts) (SIL Open Font License; see `renderer/fonts/OFL-LICENSE.txt`).
 - The bundled quotes are original lines written for this project.

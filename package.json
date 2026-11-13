@@ -5,10 +5,12 @@
   "description": "Knob-controlled countdown timer",
   "main": "main.js",
   "scripts": {
+    "postinstall": "node scripts/copy-font.js",
     "start": "electron .",
     "build": "node scripts/build.js"
   },
   "devDependencies": {
+    "@fontsource/outfit": "^5.1.0",
     "electron": "^33.0.0",
     "rcedit": "^5.0.2"
   }
