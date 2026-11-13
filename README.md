@@ -58,7 +58,7 @@ npm run build
 dist\DialTimer-win32-x64\DialTimer.exe
 ```
 
-`npm install` also copies the Outfit font from `@fontsource/outfit` into `renderer/fonts`. For development you can use `npm start`, but the knob only works with the built `DialTimer.exe`, because the AutoHotkey script matches that executable name.
+`npm install` also embeds the Outfit font from `@fontsource/outfit` into `renderer/fonts.css` (as a data URL, so the font works wherever the app is installed, even in folders with very long paths). For development you can use `npm start`, but the knob only works with the built `DialTimer.exe`, because the AutoHotkey script matches that executable name.
 
 If `npm install` skips Electron's download step on your machine, run `node node_modules/electron/install.js` once, then `npm run build`.
 
@@ -86,7 +86,7 @@ Saved to `%APPDATA%\DialTimer\settings.json`: background opacity (default 0.45),
 ```
 main.js            Electron main process: window, settings, launches AutoHotkey
 preload.js         Safe bridge between window and main process
-renderer/          UI: index.html, style.css, app.js, quotes.js, fonts/
+renderer/          UI: index.html, style.css, app.js, quotes.js, fonts.css (embedded font)
 ahk/dialtimer.ahk  Knob input bridge
 scripts/           copy-font.js and build.js
 ```
