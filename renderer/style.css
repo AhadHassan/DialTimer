@@ -30,9 +30,17 @@ html, body {
   background: rgba(0, 0, 0, var(--bg-alpha));
 }
 
-#time {
+/* Digits stay vertically centred (middle row); the quote hangs in the row below. */
+#stage {
   position: fixed;
   inset: 0;
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+}
+
+#time {
+  grid-row: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -76,6 +84,35 @@ html, body {
 @keyframes pulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.07); }
+}
+
+/* Quote under the timer: same font and opacity as the digits. */
+#quote {
+  grid-row: 3;
+  align-self: start;
+  margin-top: -1.5vw;
+  max-width: 62vw;
+  font-family: 'Outfit', 'Segoe UI', sans-serif;
+  font-weight: 300;
+  font-size: min(1.6vw, 3.2vh);
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  color: rgb(255 255 255 / var(--digit-alpha));
+}
+#quote.editing {
+  min-width: 20vw;
+  outline: none;
+  caret-color: #fff;
+  cursor: text;
+  user-select: text;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+#quote.editing:empty::before {
+  content: 'type a quote';
+  opacity: 0.4;
 }
 
 #hint {

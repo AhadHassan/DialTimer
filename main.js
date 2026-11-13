@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 
 app.setName('DialTimer');
 
-const DEFAULTS = { opacity: 0.45, digitOpacity: 1, lastDuration: 300 };
+const DEFAULTS = { opacity: 0.45, digitOpacity: 1, lastDuration: 300, quote: '' };
 
 let win = null;
 let ahk = null;

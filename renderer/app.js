@@ -8,9 +8,11 @@ const MAX_MS = 9 * 3600 * 1000;
 const OPACITY_STEP = 0.05;
 const OPACITY_MIN = 0.05;
 const DIGIT_OPACITY_MIN = 0.2;
-const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll background · ctrl+scroll digits · esc quit';
+const MAX_QUOTE = 400;
+const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll background · ctrl+scroll digits · q quote · esc quit';
 
 const timeEl = document.getElementById('time');
+const quoteEl = document.getElementById('quote');
 const hintEl = document.getElementById('hint');
 
 // idle: stopped at a set time, running, paused, alarm: finished and waiting for a click.
@@ -183,13 +185,68 @@ window.addEventListener('wheel', (e) => {
 
 /* ---------- input ---------- */
 
+/* ---------- quote ---------- */
+
+let quote = '';
+let editing = false;
+
+function startEditQuote() {
+  if (editing) return;
+  editing = true;
+  quoteEl.contentEditable = 'plaintext-only';
+  quoteEl.classList.add('editing');
+  quoteEl.focus();
+  const range = document.createRange();
+  range.selectNodeContents(quoteEl);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  showHint('enter save · esc cancel', 10 * 60 * 1000);
+}
+
+function endEditQuote(save) {
+  if (!editing) return;
+  editing = false;
+  if (save) {
+    quote = quoteEl.textContent.replace(/\s+/g, ' ').trim().slice(0, MAX_QUOTE);
+    window.dial.setSettings({ quote });
+  }
+  quoteEl.removeAttribute('contenteditable');
+  quoteEl.classList.remove('editing');
+  quoteEl.textContent = quote;
+  quoteEl.blur();
+  showHint(save ? 'saved' : 'cancelled', 1200);
+}
+
+quoteEl.addEventListener('blur', () => endEditQuote(true));
+quoteEl.addEventListener('dblclick', startEditQuote);
+
+/* ---------- input ---------- */
+
 window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
+  if (editing) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      endEditQuote(true);
+      return;
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      endEditQuote(false);
+      return;
+    }
+  } else if (e.key === 'Escape') {
     window.dial.quit();
     return;
   }
   if (e.repeat) return;
   switch (e.key) {
+    case 'q':
+    case 'Q':
+      if (editing || e.ctrlKey || e.altKey || e.metaKey) return;
+      startEditQuote();
+      break;
     case 'F13': turn(+1); break;
     case 'F14': turn(-1); break;
     case 'F15': click(); break;
@@ -206,6 +263,8 @@ window.addEventListener('keydown', (e) => {
   const s = await window.dial.getSettings();
   setOpacity(s.opacity);
   setDigitOpacity(s.digitOpacity);
+  quote = s.quote || '';
+  quoteEl.textContent = quote;
   lastDurationMs = Math.min(MAX_MS, Math.max(0, s.lastDuration * 1000)) || 300000;
   remainingMs = lastDurationMs;
   render();
