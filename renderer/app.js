@@ -9,7 +9,7 @@ const OPACITY_STEP = 0.05;
 const OPACITY_MIN = 0.05;
 const DIGIT_OPACITY_MIN = 0.2;
 const MAX_QUOTE = 400;
-const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll background · ctrl+scroll digits · q quote · esc quit';
+const HINT_DEFAULT = 'turn ±1 min · click start/pause · hold reset · scroll background · ctrl+scroll digits · q type quote · n random quote · esc quit';
 
 const timeEl = document.getElementById('time');
 const quoteEl = document.getElementById('quote');
@@ -219,6 +219,25 @@ function endEditQuote(save) {
   showHint(save ? 'saved' : 'cancelled', 1200);
 }
 
+// N shows a random bundled quote. A shuffled deck means no repeats until every quote has been shown.
+let deck = [];
+function randomQuote() {
+  const all = window.QUOTES || [];
+  if (!all.length) return;
+  if (!deck.length) {
+    deck = [...all];
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+  }
+  let next = deck.pop();
+  if (next === quote && deck.length) next = deck.pop();
+  quote = next;
+  quoteEl.textContent = quote;
+  window.dial.setSettings({ quote });
+}
+
 quoteEl.addEventListener('blur', () => endEditQuote(true));
 quoteEl.addEventListener('dblclick', startEditQuote);
 
@@ -246,6 +265,11 @@ window.addEventListener('keydown', (e) => {
     case 'Q':
       if (editing || e.ctrlKey || e.altKey || e.metaKey) return;
       startEditQuote();
+      break;
+    case 'n':
+    case 'N':
+      if (editing || e.ctrlKey || e.altKey || e.metaKey) return;
+      randomQuote();
       break;
     case 'F13': turn(+1); break;
     case 'F14': turn(-1); break;
